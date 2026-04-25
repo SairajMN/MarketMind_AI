@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarketMind AI</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="card hero">
+        <div class="hero__top">
+          <div class="brand">
+            <div class="brand__mark" aria-hidden="true">
+              <svg viewBox="0 0 64 64" focusable="false">
+                <defs>
+                  <linearGradient id="markGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fff5dc"></stop>
+                    <stop offset="100%" stop-color="#8df0d6"></stop>
+                  </linearGradient>
+                </defs>
+                <rect x="6" y="8" width="52" height="48" rx="16" fill="rgba(10,24,35,0.16)"></rect>
+                <path d="M16 42L26 31L34 37L47 22" fill="none" stroke="url(#markGradient)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <circle cx="47" cy="22" r="5" fill="#fff3cc"></circle>
+                <path d="M16 20H31" stroke="rgba(255,255,255,0.42)" stroke-width="3" stroke-linecap="round"></path>
+                <path d="M16 27H25" stroke="rgba(255,255,255,0.28)" stroke-width="3" stroke-linecap="round"></path>
+              </svg>
+            </div>
+            <div class="brand__copy">
+              <p class="eyebrow">Catalyst Intelligence</p>
+              <h1>MarketMind</h1>
+            </div>
+          </div>
+          <button id="settingsToggle" class="icon-button" type="button" aria-expanded="false" aria-controls="settingsPanel">
+            Tune
+          </button>
+        </div>
+        <p class="hero__text">
+          Read the story behind a move, not just the ticker tape. This popup is built for quick scans, visible reasoning, and crisp evidence cards.
+        </p>
+        <div class="hero__chips">
+          <span id="modeBadge" class="metric-chip">Preview Mode</span>
+          <span id="historyBadge" class="metric-chip">History 0</span>
+          <span class="metric-chip">One Tool At A Time</span>
+        </div>
+      </section>
+
+      <section id="settingsPanel" class="card settings-panel" hidden>
+        <div class="section-header">
+          <div>
+            <p class="section-kicker">Connection</p>
+            <h2>Modes and Backend</h2>
+          </div>
+          <span class="tag">Future-ready</span>
+        </div>
+
+        <div class="mode-toggle" role="tablist" aria-label="Analysis mode">
+          <button class="mode-toggle__button is-active" data-mode="preview" type="button" role="tab" aria-selected="true">
+            Preview
+          </button>
+          <button class="mode-toggle__button" data-mode="live" type="button" role="tab" aria-selected="false">
+            Live
+          </button>
+        </div>
+
+        <label class="field">
+          <span class="field__label">Backend URL</span>
+          <input id="apiBaseUrl" class="field__input" type="url" placeholder="https://marketmind-ai-api.vercel.app" spellcheck="false">
+        </label>
+
+        <p class="helper">
+          Live mode expects <code>POST /analyze</code> and <code>POST /tools/&lt;tool_name&gt;</code>. Preview mode stays fully local and uses clearly labeled sample data for UI testing.
+        </p>
+
+        <div class="settings-actions">
+          <button id="saveSettingsButton" class="secondary-button" type="button">Save Settings</button>
+        </div>
+      </section>
+
+      <section class="card composer">
+        <div class="section-header">
+          <div>
+            <p class="section-kicker">Command Deck</p>
+            <h2>Analyze a stock move</h2>
+          </div>
+          <span id="statusPill" class="status-pill">Preview ready</span>
+        </div>
+
+        <form id="analysisForm" class="analysis-form">
+          <label class="field">
+            <span class="field__label">Symbol</span>
+            <input
+              id="symbolInput"
+              class="field__input field__input--ticker"
+              type="text"
+              inputmode="text"
+              placeholder="NVDA"
+              maxlength="10"
+              autocomplete="off"
+              spellcheck="false"
+            >
+          </label>
+
+          <div class="range-picker">
+            <span class="field__label">Range</span>
+            <div class="range-picker__buttons" role="radiogroup" aria-label="Price range">
+              <button class="range-pill is-active" data-range="1d" type="button" role="radio" aria-checked="true">1D</button>
+              <button class="range-pill" data-range="5d" type="button" role="radio" aria-checked="false">5D</button>
+              <button class="range-pill" data-range="1m" type="button" role="radio" aria-checked="false">1M</button>
+              <button class="range-pill" data-range="3m" type="button" role="radio" aria-checked="false">3M</button>
+            </div>
+          </div>
+
+          <button id="analyzeButton" class="primary-button" type="submit">
+            <span id="analyzeButtonText">Analyze With Preview</span>
+            <span class="primary-button__glow" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <div class="quick-chip-row" aria-label="Suggested symbols">
+          <button class="quick-chip" type="button" data-symbol="NVDA">NVDA</button>
+          <button class="quick-chip" type="button" data-symbol="AAPL">AAPL</button>
+          <button class="quick-chip" type="button" data-symbol="MSFT">MSFT</button>
+          <button class="quick-chip" type="button" data-symbol="AMZN">AMZN</button>
+          <button class="quick-chip" type="button" data-symbol="META">META</button>
+          <button class="quick-chip" type="button" data-symbol="TSLA">TSLA</button>
+        </div>
+      </section>
+
+      <section class="card answer-card">
+        <div class="section-header">
+          <div>
+            <p class="section-kicker">Move Story</p>
+            <h2>What moved the stock?</h2>
+          </div>
+          <div id="confidenceRing" class="confidence-ring" style="--confidence-angle: 0deg;">
+            <div class="confidence-ring__inner">
+              <span id="confidenceValue">--</span>
+              <small>confidence</small>
+            </div>
+          </div>
+        </div>
+
+        <p id="answerLead" class="answer-card__lead">No explanation yet</p>
+        <p id="answerBody" class="answer-card__body">
+          Run a symbol through the popup to see the timeline, tool log, and explanation build in order.
+        </p>
+      </section>
+
+      <section class="card">
+        <div class="section-header">
+          <div>
+            <p class="section-kicker">Workflow</p>
+            <h2>Agent loop</h2>
+          </div>
+          <span class="tag">Visible reasoning</span>
+        </div>
+        <ol id="timeline" class="timeline"></ol>
+      </section>
+
+      <section class="card">
+        <div class="section-header">
+          <div>
+            <p class="section-kicker">Evidence</p>
+            <h2>What the UI should surface</h2>
+          </div>
+          <span id="evidenceCount" class="tag">0 cards</span>
+        </div>
+        <div id="evidenceGrid" class="evidence-grid"></div>
+      </section>
+
+      <section class="card">
+        <div class="section-header">
+          <div>
+            <p class="section-kicker">Tool Log</p>
+            <h2>Every loop step</h2>
+          </div>
+          <button id="resetButton" class="ghost-button" type="button">Reset</button>
+        </div>
+        <div id="toolLog" class="tool-log"></div>
+      </section>
+
+      <footer id="footerNote" class="footer-note">
+        Preview mode uses synthetic sample data only for demonstrating the UX. Switch to Live mode when your backend endpoints are ready.
+      </footer>
+    </main>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
